@@ -15,7 +15,7 @@ class SwipeTableViewController: UITableViewController {
     }
     
     
-    //MARK: - Table view datasource methods
+    //MARK: - Tableview datasource methods
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)        
@@ -42,6 +42,12 @@ class SwipeTableViewController: UITableViewController {
     func delete(at indexPath: IndexPath) -> Bool {
         return true
     }
+}
+
+extension SwipeTableViewController: UITextFieldDelegate {
     
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        return true
+    }
     
 }

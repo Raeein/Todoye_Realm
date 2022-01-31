@@ -105,7 +105,6 @@ class ToDoListViewController: UITableViewController {
         self.dismiss(animated: true, completion: nil)
     }
     
- 
     //MARK: - Core Data functionalities
     
     
@@ -132,7 +131,7 @@ extension ToDoListViewController: UISearchBarDelegate {
     }
 }
 
-
+//MARK: - UITextFieldDelegate delegate
 extension ToDoListViewController: UITextFieldDelegate {
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
@@ -141,5 +140,7 @@ extension ToDoListViewController: UITextFieldDelegate {
         addAction.isEnabled = (newString != "" ? true : false)
         return true
     }
+    
+    
 }
 

@@ -46,7 +46,7 @@ class CategoryViewController: SwipeTableViewController {
         }
     }
     
-
+    
     //MARK: - Data Manipulation Methods
     
     func save(category: Category) {
@@ -69,25 +69,25 @@ class CategoryViewController: SwipeTableViewController {
         
     }
     override func delete(at indexPath: IndexPath) -> Bool {
-//         Check if there is a category at provided row
-             guard let category = categories?[indexPath.row] else {
-                 return false
-             }
-     
-             // Delete data from persistent storage
-             do {
-                 // Open transaction
-             try realm.write {
-                 realm.delete(category)
-             }
-     
-             } catch {
-                 fatalError("Error deleting Category: \(error)")
-             }
-     
-             tableView.reloadData()
-     
-             return true
+        //         Check if there is a category at provided row
+        guard let category = categories?[indexPath.row] else {
+            return false
+        }
+        
+        // Delete data from persistent storage
+        do {
+            // Open transaction
+            try realm.write {
+                realm.delete(category)
+            }
+            
+        } catch {
+            fatalError("Error deleting Category: \(error)")
+        }
+        
+        tableView.reloadData()
+        
+        return true
     }
     
     
@@ -127,21 +127,19 @@ class CategoryViewController: SwipeTableViewController {
             alert.view.superview?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.dismissOnTapOutside)))
         }
         
+        
     }
     @objc func dismissOnTapOutside() {
         self.dismiss(animated: true, completion: nil)
     }
     
-}
-
-extension CategoryViewController: UITextFieldDelegate {
-    
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+    override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let userEnteredString = textField.text
         let newString = (userEnteredString! as NSString).replacingCharacters(in: range, with: string) as NSString
-        //        newString != "" ? (alertActionAdd.isEnabled = true) : (alertActionAdd.isEnabled = false)
         addAction.isEnabled = (newString != "" ? true : false)
         return true
     }
 }
+
+
 
