@@ -39,15 +39,15 @@ class ToDoListViewController: UITableViewController, UITextFieldDelegate {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        //          to update
-        //        itemArray[indexPath.row].setValue("Completed", forKey: "title")
-        
-        //to delete
-        //        context.delete(itemArray[indexPath.row])
-        //        itemArray.remove(at: indexPath.row)
-        
-        //        itemArray[indexPath.row].done = !itemArray[indexPath.row].done
-        //        toDoItems[indexPath.row].done.toggle()
+        if let item = toDoItems?[indexPath.row] {
+            do {
+                try realm.write({
+//                    realm.delete(item)
+                    item.done.toggle()
+                })
+            } catch { print("Error saving done status, \(error)") }
+        }
+        tableView.reloadData()
         tableView.deselectRow(at: indexPath, animated: true)
         
     }
@@ -67,6 +67,7 @@ class ToDoListViewController: UITableViewController, UITextFieldDelegate {
                     try self.realm.write({
                         let newItem = Item()
                         newItem.title = textField.text!
+                        newItem.dateCreated = Date()
                         currentCategory.items.append(newItem)
                     })
                 } catch {
@@ -114,7 +115,7 @@ class ToDoListViewController: UITableViewController, UITextFieldDelegate {
     }
     //MARK: - Core Data functionalities
     
-
+    
     func loadItems() {
         toDoItems = selectedCategory?.items.sorted(byKeyPath: "title", ascending: true)
     }
@@ -123,7 +124,8 @@ class ToDoListViewController: UITableViewController, UITextFieldDelegate {
 //MARK: - Search bar methods
 extension ToDoListViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        loadItems()
+        toDoItems = toDoItems?.filter("title CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "dateCreated", ascending: true)
+        tableView.reloadData()
     }
     
     

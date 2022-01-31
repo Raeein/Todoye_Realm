@@ -16,7 +16,7 @@ class CategoryViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        return categories?.count ?? 1
+        return  categories?.count ?? 1
         
     }
     
@@ -65,7 +65,6 @@ class CategoryViewController: UITableViewController {
     func loadCategories() {
         
         categories = realm.objects(Category.self)
-        print("Hello: \(categories!.count)")
         tableView.reloadData()
         
     }
