@@ -1,7 +1,7 @@
 import UIKit
 import RealmSwift
 
-class ToDoListViewController: UITableViewController {
+class ToDoListViewController: SwipeTableViewController {
     let realm = try! Realm()
     var addAction = UIAlertAction()
     var toDoItems: Results<Item>?
@@ -22,7 +22,7 @@ class ToDoListViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
         //Look at this
         if let item = toDoItems?[indexPath.row] {
             var content = cell.defaultContentConfiguration()
@@ -36,6 +36,9 @@ class ToDoListViewController: UITableViewController {
         
         return cell
     }
+    
+
+    
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
@@ -100,16 +103,45 @@ class ToDoListViewController: UITableViewController {
         }
         
     }
-    
     @objc func dismissOnTapOutside() {
         self.dismiss(animated: true, completion: nil)
     }
+    //MARK: - Overriding the superclasses shouldChangeCharactersIn function
+    override func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        let userEnteredString = textField.text
+        let newString = (userEnteredString! as NSString).replacingCharacters(in: range, with: string) as NSString
+        addAction.isEnabled = (newString != "" ? true : false)
+        return true
+    }
+
     
     //MARK: - Core Data functionalities
     
     
     func loadItems() {
         toDoItems = selectedCategory?.items.sorted(byKeyPath: "title", ascending: true)
+    }
+    
+    override func delete(at indexPath: IndexPath) -> Bool {
+        //         Check if there is a category at provided row
+        guard let item = toDoItems?[indexPath.row] else {
+            return false
+        }
+        
+        // Delete data from persistent storage
+        do {
+            // Open transaction
+            try realm.write {
+                realm.delete(item)
+            }
+            
+        } catch {
+            fatalError("Error deleting Category: \(error)")
+        }
+        
+        tableView.reloadData()
+        
+        return true
     }
     
 }
@@ -129,18 +161,7 @@ extension ToDoListViewController: UISearchBarDelegate {
             }
         }
     }
+
 }
 
 //MARK: - UITextFieldDelegate delegate
-extension ToDoListViewController: UITextFieldDelegate {
-    
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        let userEnteredString = textField.text
-        let newString = (userEnteredString! as NSString).replacingCharacters(in: range, with: string) as NSString
-        addAction.isEnabled = (newString != "" ? true : false)
-        return true
-    }
-    
-    
-}
-
