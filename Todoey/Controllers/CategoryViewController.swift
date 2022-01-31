@@ -1,7 +1,7 @@
 import UIKit
 import RealmSwift
 
-class CategoryViewController: UITableViewController {
+class CategoryViewController: SwipeTableViewController {
     lazy var realm = try! Realm()
     
     var addAction = UIAlertAction()
@@ -10,6 +10,7 @@ class CategoryViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         loadCategories()
+        tableView.rowHeight = 80.0
     }
     
     //MARK: - TableView Datasource Methods
@@ -21,17 +22,15 @@ class CategoryViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
-        
+        //Gets the super classes cell and its functionalities
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
         var content = cell.defaultContentConfiguration()
         content.text = categories?[indexPath.row].name ?? "No Categories Added"
         cell.contentConfiguration = content
-        
         return cell
         
     }
-
+    
     
     //MARK: - TableView Delegate Methods
     
@@ -47,6 +46,7 @@ class CategoryViewController: UITableViewController {
         }
     }
     
+
     //MARK: - Data Manipulation Methods
     
     func save(category: Category) {
@@ -68,6 +68,27 @@ class CategoryViewController: UITableViewController {
         tableView.reloadData()
         
     }
+    override func delete(at indexPath: IndexPath) -> Bool {
+//         Check if there is a category at provided row
+             guard let category = categories?[indexPath.row] else {
+                 return false
+             }
+     
+             // Delete data from persistent storage
+             do {
+                 // Open transaction
+             try realm.write {
+                 realm.delete(category)
+             }
+     
+             } catch {
+                 fatalError("Error deleting Category: \(error)")
+             }
+     
+             tableView.reloadData()
+     
+             return true
+    }
     
     
     //MARK: - Add New Categories
@@ -81,7 +102,7 @@ class CategoryViewController: UITableViewController {
             
             let newCategory = Category()
             newCategory.name = textField.text!
-    
+            
             self.save(category: newCategory)
             
         }
@@ -110,7 +131,7 @@ class CategoryViewController: UITableViewController {
     @objc func dismissOnTapOutside() {
         self.dismiss(animated: true, completion: nil)
     }
-
+    
 }
 
 extension CategoryViewController: UITextFieldDelegate {
@@ -123,3 +144,4 @@ extension CategoryViewController: UITextFieldDelegate {
         return true
     }
 }
+

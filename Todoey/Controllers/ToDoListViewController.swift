@@ -1,9 +1,9 @@
 import UIKit
 import RealmSwift
 
-class ToDoListViewController: UITableViewController, UITextFieldDelegate {
+class ToDoListViewController: UITableViewController {
     let realm = try! Realm()
-    var alertActionAdd = UIAlertAction()
+    var addAction = UIAlertAction()
     var toDoItems: Results<Item>?
     var selectedCategory : Category? {
         didSet {
@@ -59,7 +59,7 @@ class ToDoListViewController: UITableViewController, UITextFieldDelegate {
         
         let alert = UIAlertController(title: "Add New Todoey Item", message: "", preferredStyle: .alert)
         
-        alertActionAdd = UIAlertAction(title: "Add Item", style: .default) { action in
+        addAction = UIAlertAction(title: "Add Item", style: .default) { action in
             
             
             if let currentCategory = self.selectedCategory {
@@ -79,7 +79,7 @@ class ToDoListViewController: UITableViewController, UITextFieldDelegate {
             
             
         }
-        alertActionAdd.isEnabled = false
+        addAction.isEnabled = false
         
         let alertActionDismiss = UIAlertAction(title: "Cancel", style: .default) { _ in
             alert.dismiss(animated: true, completion: nil)
@@ -91,7 +91,7 @@ class ToDoListViewController: UITableViewController, UITextFieldDelegate {
             alertTextField.autocapitalizationType = .words
             textField = alertTextField
         }
-        alert.addAction(alertActionAdd)
+        alert.addAction(addAction)
         alert.addAction(alertActionDismiss)
         
         self.present(alert, animated: true) {
@@ -105,14 +105,7 @@ class ToDoListViewController: UITableViewController, UITextFieldDelegate {
         self.dismiss(animated: true, completion: nil)
     }
     
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        
-        let userEnteredString = textField.text
-        let newString = (userEnteredString! as NSString).replacingCharacters(in: range, with: string) as NSString
-        //        newString != "" ? (alertActionAdd.isEnabled = true) : (alertActionAdd.isEnabled = false)
-        alertActionAdd.isEnabled = (newString != "" ? true : false)
-        return true
-    }
+ 
     //MARK: - Core Data functionalities
     
     
@@ -139,4 +132,14 @@ extension ToDoListViewController: UISearchBarDelegate {
     }
 }
 
+
+extension ToDoListViewController: UITextFieldDelegate {
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        let userEnteredString = textField.text
+        let newString = (userEnteredString! as NSString).replacingCharacters(in: range, with: string) as NSString
+        addAction.isEnabled = (newString != "" ? true : false)
+        return true
+    }
+}
 
