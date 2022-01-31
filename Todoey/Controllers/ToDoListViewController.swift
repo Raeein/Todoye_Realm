@@ -123,7 +123,6 @@ class ToDoListViewController: UITableViewController, UITextFieldDelegate {
 //MARK: - Search bar methods
 extension ToDoListViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-
         loadItems()
     }
     

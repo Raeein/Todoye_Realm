@@ -2,7 +2,8 @@ import UIKit
 import RealmSwift
 
 class CategoryViewController: UITableViewController {
-    let realm = try! Realm()
+    lazy var realm = try! Realm()
+    
     var addAction = UIAlertAction()
     var categories: Results<Category>?
     
@@ -64,6 +65,7 @@ class CategoryViewController: UITableViewController {
     func loadCategories() {
         
         categories = realm.objects(Category.self)
+        print("Hello: \(categories!.count)")
         tableView.reloadData()
         
     }
@@ -76,7 +78,7 @@ class CategoryViewController: UITableViewController {
         
         let alert = UIAlertController(title: "Add New Category", message: "", preferredStyle: .alert)
         
-        let addAction = UIAlertAction(title: "Add", style: .default) { (action) in
+        addAction = UIAlertAction(title: "Add", style: .default) { (action) in
             
             let newCategory = Category()
             newCategory.name = textField.text!
@@ -89,14 +91,16 @@ class CategoryViewController: UITableViewController {
             alert.dismiss(animated: true, completion: nil)
         }
         addAction.isEnabled = false
-        alert.addAction(addAction)
-        alert.addAction(alertDismiss)
         
         alert.addTextField { (field) in
             field.delegate = self
+            field.placeholder = "Add a new category"
+            field.autocapitalizationType = .words
             textField = field
-            textField.placeholder = "Add a new category"
+            
         }
+        alert.addAction(addAction)
+        alert.addAction(alertDismiss)
         
         present(alert, animated: true) {
             alert.view.superview?.isUserInteractionEnabled = true
